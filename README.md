@@ -1,59 +1,31 @@
-# Trabalho-Final-Concorrente
+# Processamento de imagens com pthreads – 5 versões
 
-# Compile o gerador de testes
+## Compilar
+
+## 1. Compilar o Gerador de Testes
 gcc gerador_testes.c -o gerador_testes -O3 -Wall
 
-# Criar o diretório de binários
-mkdir -p bin
-
-# Compilar a Versão Sequencial (Baseline)
-gcc src/image_sequencial.c -o bin/sequencial -O3 -Wall -Wextra
-
-# Compilar a Versão Fatias Horizontais
-gcc src/image_horizontal.c -o bin/horizontal -lpthread -O3 -Wall -Wextra
-
-# Compilar a Versão Fatias Verticais
-gcc src/image_vertical.c -o bin/vertical -lpthread -O3 -Wall -Wextra
-
-# Compilar a Versão Tiling Estático
-gcc src/image_tiling_static.c -o bin/tiling_static -lpthread -O3 -Wall -Wextra
-
-# Compilar a Versão Tiling Dinâmico
+## 3. Compilar as 5 versões do programa
+gcc src/image_sequencial.c     -o bin/sequencial     -O3 -Wall -Wextra
+gcc src/image_horizontal.c     -o bin/horizontal     -lpthread -O3 -Wall -Wextra
+gcc src/image_vertical.c       -o bin/vertical       -lpthread -O3 -Wall -Wextra
+gcc src/image_tiling_static.c  -o bin/tiling_static  -lpthread -O3 -Wall -Wextra
 gcc src/image_tiling_dynamic.c -o bin/tiling_dynamic -lpthread -O3 -Wall -Wextra
 
-# Criar a pasta de testes
-mkdir -p testes
-
-# --- Testes de Corretude (Pequeno) ---
-./gerador_testes preto 512 512 testes/preto_512.pgm
-./gerador_testes branco 512 512 testes/branco_512.pgm
-./gerador_testes xadrez 512 512 testes/xadrez_512.pgm
-
-# --- Testes de Desempenho (Médio) ---
-./gerador_testes xadrez 1920 1080 testes/xadrez_1920.pgm
-
-# --- Testes de Desempenho (Grande - Carga Uniforme) ---
+## Gerar Imagens de Teste 
 ./gerador_testes xadrez 4096 4096 testes/xadrez_4096.pgm
 
-# --- Testes de Desempenho (Gigante - Carga Uniforme) ---
-./gerador_testes xadrez 8192 8192 testes/xadrez_8192.pgm
-
-# --- Testes de Desempenho (Grande - Carga Não-Uniforme) ---
-# (Metade branca, metade xadrez)
-./gerador_testes metade 4096 4096 testes/metade_4096.pgm
-
-# Dê permissão de execução ao script
-chmod +x run_testes.sh
-
-# Execute o script! (Isso pode demorar alguns minutos)
-./run_testes.sh
-
-# Uso (Sequencial): ./bin/sequencial <arquivo.pgm>
+### Execução Manual
 ./bin/sequencial testes/xadrez_4096.pgm
 
-# Uso (Fatias): ./bin/horizontal <arquivo.pgm> <n_threads>
+### Fatias (Horizontal / Vertical)
 ./bin/horizontal testes/xadrez_4096.pgm 8
+./bin/vertical testes/xadrez_4096.pgm 8
 
-# Uso (Tiling): ./bin/tiling_static <arquivo.pgm> <n_threads> [bw] [bh]
-# (bw e bh são opcionais, padrão 64x64)
-./bin/tiling_static testes/metade_4096.pgm 8 256 256
+### Tiling (Estático / Dinâmico)
+./bin/tiling_static testes/xadrez_4096.pgm 8 64 64
+./bin/tiling_dynamic testes/metade_4096.pgm 8 256 256
+
+## Execução Automatizada
+chmod +x run_testes.sh
+./run_testes.sh
